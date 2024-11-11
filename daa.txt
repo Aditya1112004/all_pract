@@ -1,0 +1,166 @@
+# fibonacci
+# Recursive approach with step count
+def fibonacci_recursive(n, steps=None):
+    if steps is None:
+        steps = [0]  # Initialize step counter as a list to allow mutation
+    
+    steps[0] += 1  # Increment step count with each call
+    
+    if n <= 1:
+        return n
+    else:
+        return fibonacci_recursive(n - 1, steps) + fibonacci_recursive(n - 2, steps)
+
+# Iterative approach with step count
+def fibonacci_iterative(n):
+    steps = 0  # Step counter
+    a, b = 0, 1
+    
+    for _ in range(n):
+        steps += 1  # Increment step count for each loop iteration
+        a, b = b, a + b
+    
+    return a, steps
+
+# Testing the functions
+n = int(input("Enter the Fibonacci term index: "))
+
+# Recursive approach
+steps_recursive = [0]
+fib_recursive = fibonacci_recursive(n, steps_recursive)
+print(f"Recursive Approach: Fibonacci({n}) = {fib_recursive}, Steps = {steps_recursive[0]}")
+
+# Iterative approach
+fib_iterative, steps_iterative = fibonacci_iterative(n)
+print(f"Iterative Approach: Fibonacci({n}) = {fib_iterative}, Steps = {steps_iterative}")
+
+=============================================================================================================
+#job_scheduling
+class Job:
+    def __init__(self, job_id, deadline, profit):
+        self.job_id = job_id  # Unique identifier for the job
+        self.deadline = deadline  # Deadline of the job
+        self.profit = profit  # Profit if the job is completed
+
+# Function to perform job sequencing with deadlines
+def job_sequencing(jobs, max_deadline):
+    # Sort jobs by descending order of profit
+    jobs.sort(key=lambda x: x.profit, reverse=True)
+
+    # Initialize time slots (all initially free)
+    slots = [-1] * max_deadline  # -1 indicates free slot
+    total_profit = 0  # Track total profit
+    job_sequence = []  # Track job sequence
+
+    for job in jobs:
+        # Try to find a free slot from the last possible time slot to the first
+        for j in range(min(max_deadline - 1, job.deadline - 1), -1, -1):
+            if slots[j] == -1:  # Check if slot is free
+                slots[j] = job.job_id  # Assign job to the slot
+                total_profit += job.profit  # Add profit
+                job_sequence.append(job.job_id)  # Record job in sequence
+                break  # Move to the next job
+
+    return job_sequence, total_profit
+
+# Example usage
+jobs = [
+    Job('A', 2, 100),
+    Job('B', 1, 19),
+    Job('C', 2, 27),
+    Job('D', 1, 25),
+    Job('E', 3, 15)
+]
+max_deadline = 3
+job_sequence, total_profit = job_sequencing(jobs, max_deadline)
+
+print("Job sequence:", job_sequence)
+print("Total profit:", total_profit)
+
+=============================================================================================================
+# fract_knapsack
+def solve_knapsack():
+    val=[50,100,150,200] #value array
+    wt=[8,16,32,40] # Weight array
+    W=50
+    n=len(val) - 1
+    def knapsack(W,n): # (Remaining Weight, Number of items checked)
+        #base case
+        if n<0 or W<=0:
+            return 0
+        
+        #Higher weight than available
+        if wt[n]>W:
+            return knapsack(W, n-1)
+        
+        else:
+            return max(val[n] + knapsack(W-wt[n],n-1),knapsack(W,n-1))
+            # max(including , not including)
+    print(knapsack(W,n))
+
+if __name__=="__main__":
+    solve_knapsack()
+
+
+=============================================================================================================
+# 0_1_knapsack
+def knapsack_dp(weights, values, capacity):
+    n = len(values)
+    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
+    
+    for i in range(1, n + 1):
+        for w in range(1, capacity + 1):
+            if weights[i - 1] <= w:
+                dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1])
+            else:
+                dp[i][w] = dp[i - 1][w]
+                
+    return dp[n][capacity]
+
+# Example usage
+weights = [1, 2, 3, 8, 7, 4]
+values = [20, 5, 10, 40, 15, 25]
+capacity = 10
+print("Maximum value (DP):", knapsack_dp(weights, values, capacity))
+
+
+=============================================================================================================
+# n_queen
+def n_queens(n):
+    col = set()
+    posDiag=set() # (r+c)
+    negDiag=set() # (r-c)
+
+    res=[]
+
+    board = [["0"]*n for i in range(n) ]
+    def backtrack(r):
+        if r==n:
+            copy = [" ".join(row) for row in board]
+            res.append(copy)
+            return
+
+        for c in range(n):
+            if c in col or (r+c) in posDiag or (r-c) in negDiag:
+                continue
+
+            col.add(c)
+            posDiag.add(r+c)
+            negDiag.add(r-c)
+            board[r][c]="1"
+
+            backtrack(r+1)
+
+            col.remove(c)
+            posDiag.remove(r+c)
+            negDiag.remove(r-c)
+            board[r][c]="0"
+    backtrack(0)
+    for sol in res:
+        for row in sol:
+            print(row)
+        print()
+    
+if __name__=="__main__":
+    n_queens(4)
+=============================================================================================================
